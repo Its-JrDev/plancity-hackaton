@@ -1,0 +1,43 @@
+services:
+  db:
+    build: ./database
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-plancity}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-plancity}
+      POSTGRES_DB: ${POSTGRES_DB:-plancity}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432" # solo debug local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-plancity} -d ${POSTGRES_DB:-plancity}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./apps/api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: ${PORT:-3000}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://plancity:plancity@db:5432/plancity}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET requerido}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+    ports:
+      - "3000:3000"
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:

@@ -1,0 +1,25 @@
+# ---> Node / builds
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.vite/
+.next/
+
+# ---> Env / secretos (nunca versionar)
+.env
+.env.local
+.env.*.local
+
+# ---> Docker
+pgdata/
+
+# ---> OS / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
