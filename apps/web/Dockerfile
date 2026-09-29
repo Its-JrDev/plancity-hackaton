@@ -1,10 +1,8 @@
 # ---- build ----
 FROM node:20-alpine AS build
 WORKDIR /app
-# TODO hackatón (Dev 1): copiar fuente real de riwi-react-perf-test a apps/web
-#   cp -r ../../riwi-react-perf-test/src ./src ; + package.json, vite.config.ts, etc.
-COPY package.json package-lock.json* ./
-RUN npm ci || npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
 ARG VITE_API_URL=http://localhost:3000
 ENV VITE_API_URL=$VITE_API_URL
